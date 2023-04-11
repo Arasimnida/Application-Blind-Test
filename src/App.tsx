@@ -3,6 +3,7 @@ import './App.css';
 import { useState } from 'react';
 import { fetchTracks } from './lib/fetchTracks';
 import { useQuery } from '@tanstack/react-query';
+import { SavedTrack } from 'spotify-types';
 
 const trackUrls = [
   'https://p.scdn.co/mp3-preview/742294f35af9390e799dd96c633788410a332e52',
@@ -11,6 +12,11 @@ const trackUrls = [
   'https://p.scdn.co/mp3-preview/0f6b8a3524ec410020457da4cdd7717f9addce2f',
   'https://p.scdn.co/mp3-preview/ac28d1b0be285ed3bfd8e9fa5fad133776d7cf36',
 ];
+
+const AlbumCover = (track: SavedTrack) => {
+  const src = track.track.album.images[0]?.url;
+  return <img src={src} style={{ width: 400, height: 400 }} />;
+};
 
 const App = () => {
   const [trackIndex, setTrackIndex] = useState(0);
@@ -33,6 +39,8 @@ const App = () => {
     setTrackIndex((trackIndex + 1) % tracks.length);
   };
 
+  const currentTrack = tracks?.[trackIndex];
+
   return (
     <div className="App">
       <header className="App-header">
@@ -47,12 +55,11 @@ const App = () => {
         ) : (
           <div>No tracks</div>
         )}
-        {tracks && (
-          <audio
-            src={tracks?.[trackIndex]?.track.preview_url}
-            autoPlay
-            controls
-          />
+        {currentTrack && (
+          <>
+            <audio src={currentTrack.track.preview_url} autoPlay controls />
+            <AlbumCover track={currentTrack} />
+          </>
         )}
         <button onClick={goToNextTrack}>Next track</button>
       </div>
