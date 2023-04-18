@@ -1,6 +1,6 @@
 import logo from './assets/logo.svg';
 import './App.css';
-import { useState } from 'react';
+import { ChangeEvent, useState } from 'react';
 import { fetchTracks } from './lib/fetchTracks';
 import { useQuery } from '@tanstack/react-query';
 import { SavedTrack } from 'spotify-types';
@@ -15,7 +15,6 @@ const App = () => {
   const [trackIndex, setTrackIndex] = useState(0);
   const [nbGood, setNbGood] = useState(0);
   const [seen, setSeen] = useState(0);
-  const [giveUp, setGiveUp] = useState(false);
 
   const [userInput, setUserInput] = useState('');
 
@@ -42,7 +41,7 @@ const App = () => {
     swal('Dommage', 'La répose était : ' + currentTrack?.track.name, 'error');
   };
 
-  const handleInputChange = event => {
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     setUserInput(event.target.value);
   };
 
