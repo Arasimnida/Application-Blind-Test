@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { fetchTracks } from './lib/fetchTracks';
 import { useQuery } from '@tanstack/react-query';
 import { SavedTrack } from 'spotify-types';
+import swal from 'sweetalert';
 
 const AlbumCover = (track: SavedTrack) => {
   const src = track.track.album.images[0]?.url;
@@ -12,6 +13,8 @@ const AlbumCover = (track: SavedTrack) => {
 
 const App = () => {
   const [trackIndex, setTrackIndex] = useState(0);
+  const [nbGood, setNbGood] = useState(0);
+  const [seen, setSeen] = useState(0);
 
   const {
     data: tracks,
@@ -29,24 +32,48 @@ const App = () => {
   const name0 = tracks?.[0];
   const goToNextTrack = () => {
     setTrackIndex((trackIndex + 1) % tracks.length);
+    setSeen(seen + 1);
   };
 
   const currentTrack = tracks?.[trackIndex];
+
+  const [userInput, setUserInput] = useState('');
+
+  const handleInputChange = event => {
+    setUserInput(event.target.value);
+  };
+
+  const goodAnswer = () => {
+    swal('Exact !', 'Tu as trouvé la bonne musique !', 'success');
+    setTrackIndex((trackIndex + 1) % tracks.length);
+    setSeen(seen + 1);
+    setNbGood(nbGood + 1);
+  };
+
+  const badAnser = () => {
+    swal(
+      'Perdu !!',
+      'Continue de chercher tu vas finir par trouver...',
+      'error',
+    );
+  };
+
+  const checkAnswer = () => {
+    if (currentTrack?.track.name === userInput) {
+      goodAnswer();
+    } else {
+      badAnser();
+    }
+  };
 
   return (
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
-        <h1 className="App-title">Bienvenue sur le blind test</h1>
+        <h1 className="App-title">Blind test</h1>
       </header>
       <div className="App-images">
-        <p>Il va falloir modifier le code pour faire un vrai blind test !</p>
         <p>Il y a actuellement {tracks.length} titres dans le blind test</p>
-        {name0 ? (
-          <p>Titre de la première musique : {name0.track.name}</p>
-        ) : (
-          <div>No tracks</div>
-        )}
         {currentTrack && (
           <>
             <audio src={currentTrack.track.preview_url} autoPlay controls />
@@ -54,6 +81,16 @@ const App = () => {
         )}
         <button onClick={goToNextTrack}>Next track</button>
       </div>
+      <div>
+        {nbGood} titres trouvés sur {seen}
+      </div>
+      <p>
+        Ecris le titre de la musique (attnetion aux majuscules) ! Si ce n'est pas bon cela ne fait rien
+        cependant si tu as la bonne réponse tu pourras passer à la musique
+        suivante ! Bon courage :)
+      </p>
+      <input type="text" value={userInput} onChange={handleInputChange} />
+      <button onClick={checkAnswer}>Valider</button>
       <div className="App-buttons"></div>
     </div>
   );
