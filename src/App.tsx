@@ -15,6 +15,9 @@ const App = () => {
   const [trackIndex, setTrackIndex] = useState(0);
   const [nbGood, setNbGood] = useState(0);
   const [seen, setSeen] = useState(0);
+  const [giveUp, setGiveUp] = useState(false);
+
+  const [userInput, setUserInput] = useState('');
 
   const {
     data: tracks,
@@ -30,14 +33,14 @@ const App = () => {
   if (isLoading) return <div>Loading...</div>;
 
   const name0 = tracks?.[0];
-  const goToNextTrack = () => {
-    setTrackIndex((trackIndex + 1) % tracks.length);
-    setSeen(seen + 1);
-  };
 
   const currentTrack = tracks?.[trackIndex];
 
-  const [userInput, setUserInput] = useState('');
+  const goToNextTrack = () => {
+    setTrackIndex((trackIndex + 1) % tracks.length);
+    setSeen(seen + 1);
+    swal('Dommage', 'La répose était : ' + currentTrack?.track.name, 'error');
+  };
 
   const handleInputChange = event => {
     setUserInput(event.target.value);
@@ -59,7 +62,7 @@ const App = () => {
   };
 
   const checkAnswer = () => {
-    if (currentTrack?.track.name === userInput) {
+    if (currentTrack?.track.name.toLowerCase() === userInput.toLowerCase()) {
       goodAnswer();
     } else {
       badAnser();
@@ -79,15 +82,15 @@ const App = () => {
             <audio src={currentTrack.track.preview_url} autoPlay controls />
           </>
         )}
-        <button onClick={goToNextTrack}>Next track</button>
+        <button onClick={goToNextTrack}>Give up</button>
       </div>
       <div>
         {nbGood} titres trouvés sur {seen}
       </div>
       <p>
-        Ecris le titre de la musique (attnetion aux majuscules) ! Si ce n'est pas bon cela ne fait rien
-        cependant si tu as la bonne réponse tu pourras passer à la musique
-        suivante ! Bon courage :)
+        Ecris le titre de la musique (attnetion aux majuscules) ! Si ce n'est
+        pas bon cela ne fait rien cependant si tu as la bonne réponse tu pourras
+        passer à la musique suivante ! Bon courage :)
       </p>
       <input type="text" value={userInput} onChange={handleInputChange} />
       <button onClick={checkAnswer}>Valider</button>
